@@ -3,12 +3,20 @@ use std::fs;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    let query = &args[1];
-    let file_path = &args[2];
-
-    println!("{}에서 {}을 검색합니다.", file_path, query);
-
-    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let config = parse_config(&args);
+    
+    println!("{}에서 {}을 검색합니다.", config.file_path, config.query);
+    let contents = fs::read_to_string(config.file_path).expect("Should have been able to read the file");
     println!("\n내용: \n{contents}");
+}
+
+struct Config {
+    query: String,
+    file_path: String,
+}
+
+fn parse_config(args: &[String]) -> Config {
+    let query = args[1].clone();
+    let file_path = args[2].clone();
+    Config { query, file_path }
 }
