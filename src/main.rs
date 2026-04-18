@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::process;
+use std::error::Error;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -9,8 +10,10 @@ fn main() {
         process::exit(1);
     });
     println!("{}에서 {}을 검색합니다.", config.file_path, config.query);
-    let contents = fs::read_to_string(config.file_path).expect("Should have been able to read the file");
-    println!("\n내용: \n{contents}");
+    if let Err(e) = run(config) {
+        println!("실행 중 에러가 발생했습니다. {e}");
+        process::exit(1);
+    }
 }
 
 struct Config {
@@ -27,4 +30,10 @@ impl Config {
         let file_path = args[2].clone();
         Ok(Config { query, file_path })
     }
+}
+
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(config.file_path)?;
+    println!("\n내용: \n{contents}");
+    Ok(())
 }
